@@ -10,55 +10,29 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 try:
     if WEB_APP_URL:
-        bot.set_chat_menu_button(
-            menu_button=types.MenuButtonWebApp(
-                type="web_app",
-                text="Apri Italia Notizie",
-                web_app=types.WebAppInfo(url=WEB_APP_URL)
-            )
-        )
+        bot.set_chat_menu_button(menu_button=types.MenuButtonWebApp(type="web_app", text="Lezen", web_app=types.WebAppInfo(url=WEB_APP_URL)))
 except Exception as e:
     print("Menu button error: " + str(e))
 
 
 def open_button():
     if WEB_APP_URL:
-        return types.InlineKeyboardButton(
-            text="📰 Apri Italia Notizie",
-            web_app=types.WebAppInfo(url=WEB_APP_URL)
-        )
-    return types.InlineKeyboardButton(
-        text="📰 Apri Italia Notizie",
-        url="https://www.ansa.it"
-    )
+        return types.InlineKeyboardButton(text="📰 Nu lezen", web_app=types.WebAppInfo(url=WEB_APP_URL))
+    return types.InlineKeyboardButton(text="📰 Nu lezen", url="https://www.nrc.nl")
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.row(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "📰 *Benvenuti su Italia Notizie.*\n\n"
-        "_L informazione e un diritto di tutti._\n\n"
-        "Ogni giorno una selezione di cultura, viaggi, "
-        "cucina, scienza e sport, da leggere in chat "
-        "con calma.\n\n"
-        "Per cominciare, toccate *I titoli del giorno*."
-    )
-    bot.send_message(
-        message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"), types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("📰 *Welkom bij Dagelijkse Thema's.*\n\n"
+        "Elke dag een selectie van cultuur, reizen, "
+        "keuken, wetenschap en technologie — "
+        "rustig lezen in de chat.\n\n"
+        "Tik op *Onderwerpen van de dag* "
+        "om te beginnen.")
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "headlines")
@@ -66,39 +40,21 @@ def headlines(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
-        types.InlineKeyboardButton(
-            text="🎨 Cultura — mostre d autunno",
-            callback_data="culture"
-        ),
-        types.InlineKeyboardButton(
-            text="🍝 Cucina — ricette regionali",
-            callback_data="cuisine"
-        ),
-        types.InlineKeyboardButton(
-            text="🏠 Viaggi — cinque borghi",
-            callback_data="travel"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "📋 *I titoli del giorno*\n\n"
-        "Tre letture scelte per oggi. "
-        "Ognuna leggibile per intero in chat.\n\n"
-        "*Cultura* — mostre d autunno: cinque appuntamenti "
-        "da non perdere nei musei italiani.\n\n"
-        "*Cucina* — ricette regionali: quattro piatti classici "
-        "della tradizione italiana.\n\n"
-        "*Viaggi* — cinque borghi italiani da scoprire "
-        "nei fine settimana d autunno.\n\n"
-        "Toccate un titolo per aprire l articolo completo."
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+        types.InlineKeyboardButton(text="🎨 Cultuur — herfsttentoonstellingen", callback_data="culture"),
+        types.InlineKeyboardButton(text="🍳 Keuken — Nederlandse recepten", callback_data="cuisine"),
+        types.InlineKeyboardButton(text="🏠 Reizen — vijf dorpen", callback_data="travel"),
+        types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("📋 *Onderwerpen van de dag*\n\n"
+        "Drie verhalen voor vandaag. "
+        "Elk volledig te lezen in de chat.\n\n"
+        "*Cultuur* — herfsttentoonstellingen: vijf "
+        "afspraken in Nederlandse musea.\n\n"
+        "*Keuken* — Nederlandse klassiekers: vier "
+        "traditionele recepten.\n\n"
+        "*Reizen* — vijf Nederlandse dorpen "
+        "voor een herfstig weekend.\n\n"
+        "Tik op een titel om het artikel te openen.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "culture")
@@ -106,51 +62,33 @@ def culture(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.row(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "🎨 *Mostre d autunno: cinque appuntamenti "
-        "nei musei italiani*\n\n"
-        "I musei riaprono con la nuova stagione. "
-        "Cinque appuntamenti che meritano attenzione.\n\n"
-        "*Roma — arte del Novecento*\n"
-        "Una grande retrospettiva presso una delle gallerie "
-        "nazionali raccoglie opere di alcuni fra i maggiori "
-        "pittori italiani del secolo scorso. Accanto ai dipinti, "
-        "materiali d archivio e fotografie inedite.\n\n"
-        "*Milano — design e industria*\n"
-        "Una mostra dedicata al design industriale italiano "
-        "ripercorre sessant anni di oggetti quotidiani, "
-        "dalla lampada da tavolo alla macchina da scrivere. "
-        "Catalogo particolarmente curato.\n\n"
-        "*Firenze — disegno rinascimentale*\n"
-        "Fogli e taccuini di grandi maestri esposti in dialogo "
-        "con opere contemporanee ispirate alla stessa tradizione. "
-        "Occasione rara per vedere disegni normalmente "
-        "conservati in deposito.\n\n"
-        "*Napoli — fotografia del secondo dopoguerra*\n"
-        "Un percorso di reportage in bianco e nero racconta "
-        "la citta e il Sud negli anni della ricostruzione. "
-        "Sguardo empatico e documentario insieme.\n\n"
-        "*Torino — scultura contemporanea*\n"
-        "Il museo cittadino ospita nuove installazioni "
-        "negli spazi aperti del parco. Le opere, dedicate "
-        "al tema dell acqua, dialogano particolarmente bene "
-        "con la luce d autunno.\n\n"
-        "_Date e orari vanno verificati sui siti ufficiali._"
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"), types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("🎨 *Herfsttentoonstellingen: vijf afspraken "
+        "in Nederlandse musea*\n\n"
+        "De musea openen het nieuwe seizoen.\n\n"
+        "*Amsterdam — Rijksmuseum*\n"
+        "Een grote tentoonstelling over de Gouden "
+        "Eeuw met zelden vertoonde werken uit "
+        "particuliere collecties. Archiefmateriaal "
+        "en onuitgegeven brieven.\n\n"
+        "*Amsterdam — Van Gogh Museum*\n"
+        "De vroege werken van Van Gogh naast "
+        "tijdgenoten. Nieuwe inzichten door "
+        "moderne restauratietechnieken.\n\n"
+        "*Rotterdam — Museum Boijmans*\n"
+        "Hedendaagse fotografie uit de Randstad. "
+        "Zwart-witreportages over het naoorlogse "
+        "Rotterdam. Documentair en poetisch.\n\n"
+        "*Den Haag — Mauritshuis*\n"
+        "Vermeer en zijn tijdgenoten in een "
+        "nieuw licht. Gerestaureerde meesterwerken "
+        "met details die eeuwenlang onzichtbaar waren.\n\n"
+        "*Utrecht — Centraal Museum*\n"
+        "Design en architectuur van Nederlandse "
+        "bodem. Zestig jaar alledaagse voorwerpen "
+        "opnieuw bekeken.\n\n"
+        "_Openingstijden op de museumwebsites._")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "cuisine")
@@ -158,42 +96,32 @@ def cuisine(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.row(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "🍝 *Ricette regionali: quattro piatti classici*\n\n"
-        "La cucina italiana e un patrimonio di sapori regionali. "
-        "Quattro ricette per riscoprire la tradizione.\n\n"
-        "*Cacio e pepe (Lazio)*\n"
-        "Tonnarelli, pecorino romano e pepe nero. La semplicita "
-        "che richiede maestria: la crema si ottiene amalgamando "
-        "il formaggio con l acqua di cottura. Nient altro.\n\n"
-        "*Pesto alla genovese (Liguria)*\n"
-        "Basilico di Pra, pinoli, aglio, parmigiano, pecorino "
-        "e olio extravergine. Pestato nel mortaio, mai frullato. "
-        "Servire con trofie o trenette.\n\n"
-        "*Arancini (Sicilia)*\n"
-        "Riso al ragu, impanato e fritto. La forma cambia "
-        "da citta a citta — tonda a Palermo, a punta a Catania. "
-        "Il cuore di mozzarella filante e obbligatorio.\n\n"
-        "*Ribollita (Toscana)*\n"
-        "Zuppa di pane raffermo, cavolo nero, fagioli cannellini "
-        "e verdure dell orto. Si prepara il giorno prima e si "
-        "ribollisce — da qui il nome. Comfort food toscano.\n\n"
-        "_Dosi e tempi si adattano al gusto personale._"
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"), types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("🍳 *Nederlandse klassiekers: vier "
+        "traditionele recepten*\n\n"
+        "De Nederlandse keuken is eerlijk "
+        "en hartverwarmend.\n\n"
+        "*Stamppot boerenkool*\n"
+        "Aardappelen, boerenkool, rookworst "
+        "en een klontje boter. Stampen tot "
+        "een grove puree. Het ultieme "
+        "wintergerecht.\n\n"
+        "*Erwtensoep (snert)*\n"
+        "Spliterwten, rookworst, selderij, "
+        "prei en spek. Uren koken tot de "
+        "lepel erin blijft staan. Serveren "
+        "met roggebrood.\n\n"
+        "*Bitterballen*\n"
+        "Ragout van rundvlees, gepaneerd "
+        "en gefrituurd tot goudbruin. Serveren "
+        "met mosterd. De ideale borrelsnack.\n\n"
+        "*Appeltaart*\n"
+        "Zanddeeg, Goudreinetten, kaneel, "
+        "rozijnen en een vleugje citroensap. "
+        "Gouden korst, warm uit de oven. "
+        "Met slagroom.\n\n"
+        "_Hoeveelheden naar eigen smaak._")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "travel")
@@ -201,204 +129,110 @@ def travel(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.row(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "🏠 *Cinque borghi italiani per l autunno*\n\n"
-        "Lontano dalle mete piu affollate, cinque piccoli borghi "
-        "che in autunno mostrano il loro lato migliore.\n\n"
-        "*Civita di Bagnoregio (Lazio)*\n"
-        "Il borgo sospeso sul tufo raggiunto solo tramite "
-        "un lungo ponte pedonale. Le luci d autunno accentuano "
-        "i colori della roccia. Meglio visitarlo in settimana.\n\n"
-        "*Bobbio (Emilia-Romagna)*\n"
-        "Sull antica via Francigena, con la sua abbazia e il ponte "
-        "medievale detto del diavolo. Osterie tranquille per "
-        "una sosta di mezza giornata.\n\n"
-        "*Volpaia (Toscana)*\n"
-        "Piccolo borgo del Chianti, quasi interamente restaurato. "
-        "Le vigne intorno cambiano colore in fretta e le cantine "
-        "offrono degustazioni discrete.\n\n"
-        "*Castelmezzano (Basilicata)*\n"
-        "Fra le Dolomiti Lucane, con le case appoggiate a picchi "
-        "di roccia. Sentieri di crinale per gli amanti del trekking. "
-        "Ottima cucina montana.\n\n"
-        "*Erice (Sicilia)*\n"
-        "Sospeso in alto sul mare, spesso avvolto nella nebbia "
-        "autunnale. Pasticcerie storiche, chiese normanne e vicoli "
-        "lastricati. Una tappa che rimane nella memoria.\n\n"
-        "_Per il pernottamento si consiglia la prenotazione._"
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"), types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("🏠 *Vijf Nederlandse dorpen "
+        "voor de herfst*\n\n"
+        "*Giethoorn (Overijssel)*\n"
+        "Het Venetie van het Noorden. Geen "
+        "wegen, alleen water en bruggetjes. "
+        "In de herfst rustig en betoverend.\n\n"
+        "*Veere (Zeeland)*\n"
+        "Historisch stadje aan het Veerse Meer. "
+        "Gotisch stadhuis, jachthaven en de "
+        "mooiste lucht van Nederland.\n\n"
+        "*Bourtange (Groningen)*\n"
+        "Stervormig vestingdorp uit 1593. "
+        "Grachten, kanonnen en kasseien. "
+        "Een stap terug in de tijd.\n\n"
+        "*Elburg (Gelderland)*\n"
+        "Middeleeuws vissersdorp met intacte "
+        "stadsmuur. Smalle straatjes, ambachtelijke "
+        "winkels en uitzicht over het Veluwemeer.\n\n"
+        "*Orvelte (Drenthe)*\n"
+        "Openluchtmuseum en levend dorp tegelijk. "
+        "Saksische boerderijen, ambachten en "
+        "wandelpaden door het Drentse landschap.\n\n"
+        "_Verblijf vooraf boeken._")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "sommario")
-def sommario(call):
+@bot.callback_query_handler(func=lambda call: call.data == "summary")
+def summary(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.add(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        )
-    )
-    markup.row(
-        types.InlineKeyboardButton(
-            text="📖 Glossario",
-            callback_data="glossario"
-        ),
-        types.InlineKeyboardButton(
-            text="❓ Domande frequenti",
-            callback_data="faq"
-        )
-    )
-    markup.row(
-        types.InlineKeyboardButton(
-            text="✏️ Contatti",
-            callback_data="contact"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Informazioni",
-            callback_data="about"
-        )
-    )
-    text = (
-        "🏛 *Sommario*\n\n"
-        "Da questo menu potete:\n\n"
-        "• Leggere *i titoli del giorno* e i nostri articoli.\n"
-        "• Consultare le rubriche: Cultura, Viaggi, Cucina, "
-        "Scienza, Sport.\n"
-        "• Sfogliare il glossario e le domande frequenti.\n"
-        "• Conoscere Italia Notizie e contattare la redazione.\n\n"
-        "Per l edizione integrale, usate il pulsante qui sotto."
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.add(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"))
+    markup.row(types.InlineKeyboardButton(text="📖 Woordenlijst", callback_data="glossary"), types.InlineKeyboardButton(text="❓ Veelgestelde vragen", callback_data="faq"))
+    markup.row(types.InlineKeyboardButton(text="✏️ Contact", callback_data="contact"), types.InlineKeyboardButton(text="🏛 Over ons", callback_data="about"))
+    text = ("🏛 *Overzicht*\n\n"
+        "Vanuit dit menu kunt u:\n\n"
+        "• De *onderwerpen van de dag* lezen.\n"
+        "• Rubrieken bekijken: Cultuur, "
+        "Reizen, Keuken, Wetenschap.\n"
+        "• De woordenlijst en veelgestelde vragen raadplegen.\n"
+        "• Over ons lezen en contact opnemen.\n\n"
+        "Voor de volledige uitgave "
+        "gebruikt u de knop hieronder.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "glossario")
-def glossario(call):
+@bot.callback_query_handler(func=lambda call: call.data == "glossary")
+def glossary(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        )
-    )
-    markup.add(
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "📖 *Piccolo glossario*\n\n"
-        "Alcuni termini ricorrenti in queste rubriche:\n\n"
-        "*Redazione* — squadra che raccoglie, seleziona "
-        "e prepara i testi per la pubblicazione.\n\n"
-        "*Fondo* — articolo di riflessione, spesso firmato, "
-        "che apre una sezione o una pagina.\n\n"
-        "*Fotoreportage* — servizio giornalistico costruito "
-        "attorno a una serie di fotografie.\n\n"
-        "*Contenuto evergreen* — testo la cui attualita "
-        "non dipende da una notizia del giorno.\n\n"
-        "*Inviato* — giornalista che raccoglie notizie "
-        "sul campo.\n\n"
-        "*Rubrica* — sezione ricorrente dedicata a un "
-        "tema specifico.\n\n"
-        "_Termini usati secondo l uso corrente "
-        "del giornalismo italiano._"
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.add(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"))
+    markup.add(types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("📖 *Korte woordenlijst*\n\n"
+        "*Redactie* — het team dat teksten "
+        "selecteert en voorbereidt.\n\n"
+        "*Hoofdartikel* — opiniestuk dat "
+        "een rubriek opent.\n\n"
+        "*Fotoreportage* — journalistiek verhaal "
+        "opgebouwd rond foto's.\n\n"
+        "*Tijdloze inhoud* — tekst waarvan de "
+        "relevantie niet afhangt van het "
+        "dagelijkse nieuws.\n\n"
+        "*Correspondent* — journalist die "
+        "ter plaatse verslag doet.\n\n"
+        "*Rubriek* — vaste afdeling gewijd "
+        "aan een bepaald thema.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "faq")
 def faq(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        )
-    )
-    markup.add(
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        )
-    )
-    text = (
-        "❓ *Domande frequenti*\n\n"
-        "*Questo bot e ufficiale?*\n"
-        "Italia Notizie e un progetto editoriale "
-        "indipendente. I contenuti sono curati dalla "
-        "redazione.\n\n"
-        "*Con che frequenza si aggiorna?*\n"
-        "La selezione in chat viene rinnovata "
-        "stagionalmente. Per l edizione aggiornata "
-        "usate il pulsante di apertura.\n\n"
-        "*Come si silenziano le notifiche?*\n"
-        "Dalle impostazioni della chat Telegram potete "
-        "silenziare le notifiche di questo bot.\n\n"
-        "*Posso condividere un articolo?*\n"
-        "Si. Usate le opzioni di condivisione integrate "
-        "in Telegram per inoltrare il messaggio."
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.add(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"))
+    markup.add(types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"))
+    text = ("❓ *Veelgestelde vragen*\n\n"
+        "*Is deze bot officieel?*\n"
+        "Dagelijkse Thema's is een onafhankelijk "
+        "redactioneel project.\n\n"
+        "*Hoe vaak wordt er bijgewerkt?*\n"
+        "De selectie wordt seizoensmatig vernieuwd.\n\n"
+        "*Hoe zet ik meldingen uit?*\n"
+        "Via de Telegram-chatinstellingen.\n\n"
+        "*Kan ik een artikel delen?*\n"
+        "Ja, via de deelfunctie van Telegram.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "contact")
 def contact(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.row(
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        ),
-        types.InlineKeyboardButton(
-            text="🏛 Informazioni",
-            callback_data="about"
-        )
-    )
-    text = (
-        "✏️ *Contatti redazione*\n\n"
-        "Per la corrispondenza editoriale:\n"
-        "• E-mail: redazione@italianotizie.it\n\n"
-        "*Editore*\n"
-        "Italia Notizie S.r.l.\n"
-        "Via della Conciliazione, 10\n"
-        "00193 Roma\n"
-        "Italia\n\n"
-        "Segnalazioni e osservazioni dei lettori sono "
-        "gestiti dalla redazione nei giorni lavorativi."
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"), types.InlineKeyboardButton(text="🏛 Over ons", callback_data="about"))
+    text = ("✏️ *Contact*\n\n"
+        "Voor redactionele correspondentie:\n"
+        "• E-mail: redactie@dagelijksethemas.nl\n\n"
+        "*Uitgever*\n"
+        "Dagelijkse Thema's B.V.\n"
+        "Herengracht 182\n"
+        "1016 BR Amsterdam\n"
+        "Nederland\n\n"
+        "Reacties van lezers op werkdagen.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "about")
@@ -406,52 +240,26 @@ def about(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.row(
-        types.InlineKeyboardButton(
-            text="🏛 Sommario",
-            callback_data="sommario"
-        ),
-        types.InlineKeyboardButton(
-            text="✏️ Contatti",
-            callback_data="contact"
-        )
-    )
-    text = (
-        "🏛 *Informazioni su Italia Notizie*\n\n"
-        "Italia Notizie e un progetto editoriale "
-        "indipendente dedicato alla cultura, ai viaggi, "
-        "alla cucina e alla tecnologia italiana.\n\n"
-        "La redazione seleziona ogni giorno contenuti "
-        "di qualita per offrire ai lettori una pausa "
-        "informata dalla routine quotidiana.\n\n"
-        "Questa versione Telegram e pensata per rendere "
-        "piu comoda la lettura dei contenuti evergreen "
-        "dall interfaccia di chat."
-    )
-    bot.send_message(
-        call.message.chat.id, text,
-        parse_mode="Markdown", reply_markup=markup
-    )
+    markup.row(types.InlineKeyboardButton(text="🏛 Overzicht", callback_data="summary"), types.InlineKeyboardButton(text="✏️ Contact", callback_data="contact"))
+    text = ("🏛 *Over Dagelijkse Thema's*\n\n"
+        "Dagelijkse Thema's is een onafhankelijk "
+        "redactioneel project gewijd aan cultuur, "
+        "reizen, keuken en technologie.\n\n"
+        "De redactie selecteert dagelijks "
+        "kwalitatieve inhoud voor een "
+        "geinformeerde pauze.\n\n"
+        "Deze Telegram-uitgave is ontworpen "
+        "voor comfortabel lezen in de chat.")
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda message: True)
 def handle_all(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(open_button())
-    markup.add(
-        types.InlineKeyboardButton(
-            text="📋 I titoli del giorno",
-            callback_data="headlines"
-        )
-    )
-    bot.send_message(
-        message.chat.id,
-        "📰 Benvenuti! Toccate *I titoli del giorno* "
-        "per cominciare.",
-        parse_mode="Markdown",
-        reply_markup=markup
-    )
+    markup.add(types.InlineKeyboardButton(text="📋 Onderwerpen van de dag", callback_data="headlines"))
+    bot.send_message(message.chat.id, "📰 Welkom! Tik op *Onderwerpen van de dag* om te beginnen.", parse_mode="Markdown", reply_markup=markup)
 
 
-print("Italia Notizie Bot is running...")
+print("Dagelijkse Thema's Bot is running...")
 bot.infinity_polling()
